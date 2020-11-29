@@ -22,10 +22,8 @@ ENV DISPLAY=:1 \
 
 EXPOSE $VNC_PORT $NO_VNC_PORT
 WORKDIR $HOME
-ADD ./ $HOME/
-RUN find $HOME/ -name '*.sh' -exec chmod a+x {} + \
-    && ln -s $HOME/docker-entrypoint.sh /docker-entrypoint.sh \
-    && ln -s $HOME/install.sh /install.sh \
+ADD ./ /
+RUN find / -name '*.sh' -exec chmod a+x {} + \
     && /install.sh tools \
     && /install.sh vnc \
     && /install.sh novnc \

@@ -84,14 +84,21 @@ set_chrome_no_sandbox() {
     sed -i "/chrome/ s/$/$CHROME_FLAGS/" /opt/google/chrome/google-chrome
 }
 
-TAG=ubuntu1604
+qb() {
+    apt-get install -y qbittorrent
+
+    mkdir -p $HOME/Desktop/
+    cp /usr/share/applications/qBittorrent.desktop $HOME/Desktop/qBittorrent.desktop
+}
+
+TAG=qb
 
 build() {
     docker build --rm --no-cache -t yinping/xfce:$TAG .
 }
 
 run() {
-    docker run --cap-add SYS_ADMIN --name xfce -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
+    docker run --cap-add SYS_ADMIN --name $TAG -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
     ### Use --cap-add SYS_ADMIN to support chrome's sandbox function
 }
 

@@ -84,14 +84,25 @@ set_chrome_no_sandbox() {
     sed -i "/chrome/ s/$/$CHROME_FLAGS/" /opt/google/chrome/google-chrome
 }
 
-TAG=ubuntu1604
+wps() {
+    echo "q" > ./wps.txt
+    echo "yes" >> ./wps.txt
+    wget -O ./wps.deb https://wdl1.cache.wps.cn/wps/download/ep/Linux2019/9719/wps-office_11.1.0.9719_amd64.deb
+    apt-get install -y ./wps.deb < wps.txt
+    rm -rf ./wps.deb ./wps.txt
+
+    mkdir -p $HOME/Desktop/
+    cp /usr/share/applications/wps-*.desktop $HOME/Desktop/
+}
+
+TAG=wps
 
 build() {
     docker build --rm --no-cache -t yinping/xfce:$TAG .
 }
 
 run() {
-    docker run --cap-add SYS_ADMIN --name xfce -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
+    docker run --cap-add SYS_ADMIN --name $TAG -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
     ### Use --cap-add SYS_ADMIN to support chrome's sandbox function
 }
 

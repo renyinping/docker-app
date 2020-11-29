@@ -84,14 +84,27 @@ set_chrome_no_sandbox() {
     sed -i "/chrome/ s/$/$CHROME_FLAGS/" /opt/google/chrome/google-chrome
 }
 
-TAG=ubuntu1604
+vscode() {
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+    install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list
+
+    apt-get install -y apt-transport-https 
+    apt-get update 
+    apt-get install -y code git 
+
+    mkdir -p $HOME/Desktop/
+    cp /usr/share/applications/code.desktop $HOME/Desktop/code.desktop
+}
+
+TAG=vscode
 
 build() {
     docker build --rm --no-cache -t yinping/xfce:$TAG .
 }
 
 run() {
-    docker run --cap-add SYS_ADMIN --name xfce -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
+    docker run --cap-add SYS_ADMIN --name $TAG -p 5901:5901 -p 6901:6901 -e VNC_RESOLUTION=1440x900 -e VNC_PW=vncpassword -d yinping/xfce:$TAG
     ### Use --cap-add SYS_ADMIN to support chrome's sandbox function
 }
 
